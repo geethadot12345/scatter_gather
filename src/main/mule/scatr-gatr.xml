@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5c046c30-4c5a-451c-9a9f-c9bb3eec295f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="aggrigator-exFlow" doc:id="bbcde616-0aa2-46a5-a3bb-3e582a54299d" >
+		<http:listener doc:name="Listener" doc:id="358d6003-fcb5-4fcd-843f-b6114a20cd2e" config-ref="HTTP_Listener_config" path="/aggriex"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="a997d25a-db72-440d-af22-2c4217dbb692" timeout="100000" target="resultsArray" maxConcurrency="3">
+			<route >
+				<http:request method="GET" doc:name="Request" doc:id="c6d21742-a1b0-429d-85c7-f05ef7a4a061" url="http://post-get-api.us-e2.cloudhub.io/student/1235" outputMimeType="application/json"/>
+			</route>
+			<route >
+				<http:request method="GET" doc:name="Request" doc:id="e893b914-89df-4922-93aa-e70ba9ba9aef" url="http://post-get-api.us-e2.cloudhub.io/student/1236" outputMimeType="application/json"/>
+			</route>
+			<route >
+				<http:request method="GET" doc:name="Request" doc:id="233a3135-c501-458f-8971-ea374e92555a" url="http://post-get-api.us-e2.cloudhub.io/student/1237" outputMimeType="application/json"/>
+			</route>
+		</scatter-gather>
+		<set-payload value='#[%dw 2.0
+output application/json
+---
+vars.resultsArray]' doc:id="5aef6955-1acc-4f2e-917e-4fe9e49a27fc"/>
+	</flow>
+</mule>
